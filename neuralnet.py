@@ -10,7 +10,12 @@ with using it to solve the subset sum problem, which is NP-complete.
 
 import sys
 
+NODES = [10, 4, 1]
+
 def main():
+    problems = get_problems()
+
+def get_problems():
     with open("problems", 'r') as file:
         problemstxt = file.read()
 
@@ -21,10 +26,10 @@ def main():
             # Handle blank lines at the end of the file
             continue
 
-        problems.append(eval(line))
+        set, has_subsets = eval(line)
+        problems.append((set, int(has_subsets)))
 
-    print problems
-
+    return problems
 
 if __name__ == "__main__":
     main()
