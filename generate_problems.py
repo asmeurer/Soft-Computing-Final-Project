@@ -5,7 +5,7 @@ This generates the subset problems for input to the neural network.
 """
 
 import argparse
-import random
+from random import randint
 
 # TODO: Refactor these into command line arguments:
 
@@ -20,9 +20,10 @@ parser.add_argument('-s', '--seed', metavar='N', type=int, nargs=1,
 
 args = parser.parse_args()
 
+
 def main():
     for i in range(number_of_sets):
-        print [(-1)**random.randint(0, 1)*random(1, 10) for i in range(setsize)]
+        print [(-1)**randint(0, 1)*randint(1, 10) for i in range(setsize)]
     return
 
 if __name__ == "__main__":
