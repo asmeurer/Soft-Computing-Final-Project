@@ -18,6 +18,7 @@ eta = 1
 
 def main():
     patterns = get_problems()
+    # Each weight corresponds to the inputs of the node.
     W = init_weights(patternlength=len(patterns[0][0]))
     while objective(patterns) < eps:
         for pattern in patterns:
@@ -69,19 +70,27 @@ def sigmoiddiff(fh, k=1):
     return k*fh*(1 - fh)
 
 def output(pattern, W, layer, node):
-    sigmoid(activation(pattern, W, layer, node))
-    pass
+    return sigmoid(activation(pattern, W, layer, node))
 
 def activation(pattern, W, layer, node):
-    if layer == len(NODES) - 1:
-        return sum(wij*opi for wij, opi in zip(W[layer], pattern[0]))
-    return sum(wij*opi for wij, opi in zip())
+    return sum(wij*opi for wij, opi in zip(W[layer], pattern[0]))
 
-def errorsignal(pattern, W, layer, node):
-    if layer == len(NODES) - 1:
-        # Outer layer
-        o = output(pattern, W, layer, node)
-        return sigmoiddiff(o)*(pattern[1] - o)
+def errorsignals(pattern, W):
+    D = []
+    for i, layer in reversed(enumerate(W)):
+        d = []
+        for pattern in layer:
+            if i == len(NODES) - 1:
+                # Outer layer
+                o = output(pattern, W, layer, node)
+                dnew.append(sigmoiddiff(o)*(pattern[1] - o))
+            else:
+                for d in D[-1]:
+                    dnew.append(sigmioddiff(o)*sum(dd*wj for dd, w in
+                        zip(d, W[i + 1])))
+        D.append(dnew)
+
+    return D
 
 if __name__ == "__main__":
     main()
