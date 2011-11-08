@@ -47,7 +47,10 @@ def init_weights(patternlength, seed=None, max=1):
     W = []
     _NODES = [patternlength] + NODES
     for i in xrange(len(NODES)):
-        W.append([random.random()*max for i in xrange(_NODES[i]*_NODES[i + 1])])
+        w = []
+        for j in xrange(NODES[i]):
+            w.append([random.random()*max for k in xrange(_NODES[i + 1])])
+        W.append(w)
 
     return W
 
