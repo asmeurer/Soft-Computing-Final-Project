@@ -73,7 +73,7 @@ def output(pattern, W, layer, node):
     pass
 
 def activation(pattern, W, layer, node):
-    if layer == -1:
+    if layer == len(NODES) - 1:
         return sum(wij*opi for wij, opi in zip(W[layer], pattern[0]))
     return sum(wij*opi for wij, opi in zip())
 
