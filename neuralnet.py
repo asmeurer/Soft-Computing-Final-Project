@@ -68,6 +68,10 @@ def sigmoiddiff(fh, k=1):
     """
     return k*fh*(1 - fh)
 
+def output(pattern, W, layer, node):
+    sigmoid(activation(pattern, W, layer, node))
+    pass
+
 def activation(pattern, W, layer, node):
     if layer == -1:
         return sum(wij*opi for wij, opi in zip(W[layer], pattern[0]))
