@@ -17,15 +17,14 @@ eps = 0.1
 eta = 1
 
 def main():
-    problems = get_problems()
-    W = init_weights()
+    patterns = get_problems()
+    W = init_weights(patternlength=len(patterns[0][0]))
     while objective(patterns) < eps:
         for pattern in patterns:
-            break
-
+            return W
 
 def get_problems():
-    with open("problems", 'r') as file:
+    with open("patterns", 'r') as file:
         problemstxt = file.read()
 
     problems = []

@@ -1,3 +1,3 @@
 all:
-	./generate_problems.py >| problems
+	./generate_patterns.py >| patterns
 	./neuralnet.py

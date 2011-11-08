@@ -1,7 +1,7 @@
 #! /usr/bin/env python
 
 """
-This generates the subset problems for input to the neural network.
+This generates subset problems for input to the neural network.
 """
 
 import argparse
@@ -14,7 +14,7 @@ setrange = 500
 setsize = 10
 number_of_sets = 100
 
-parser = argparse.ArgumentParser(description="This generates the subset "
+parser = argparse.ArgumentParser(description="This generates subset "
     "problems for input to the neural network.")
 
 parser.add_argument('-s', '--seed', metavar='N', type=int, nargs=1,
