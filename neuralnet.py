@@ -39,13 +39,14 @@ def get_problems():
 
     return problems
 
-def init_weights(seed=None, max=1):
+def init_weights(patternlength, seed=None, max=1):
     if seed:
         random.seed(seed)
 
     W = []
-    for nodelen in NODES:
-        W.append([random.random()*max for i in xrange(nodelen)])
+    _NODES = [patternlength] + NODES
+    for i in xrange(len(NODES)):
+        W.append([random.random()*max for i in xrange(_NODES[i]*_NODES[i + 1])])
 
     return W
 
