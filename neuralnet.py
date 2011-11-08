@@ -70,8 +70,8 @@ def sigmoiddiff(fh, k=1):
 
 def activation(pattern, W, layer, node):
     if layer == -1:
-        return sum(wij*opi for wij, opi in zip(W[layer], pattern[0])
-    return sum(wij*opi for wij, opi in zip(
+        return sum(wij*opi for wij, opi in zip(W[layer], pattern[0]))
+    return sum(wij*opi for wij, opi in zip())
 
 def errorsignal(pattern, W, layer, node):
     if layer == len(NODES) - 1:
