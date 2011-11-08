@@ -72,10 +72,17 @@ def sigmoiddiff(fh, k=1):
 def output(pattern, W, layer, node):
     return sigmoid(activation(pattern, W, layer, node))
 
+def outputs(pattern, W):
+    O = []
+    for layer in W:
+        for node in layer:
+            pass
+
 def activation(pattern, W, layer, node):
+    # XXX: I think this is wrong.
     return sum(wij*opi for wij, opi in zip(W[layer], pattern[0]))
 
-def errorsignals(pattern, W):
+def errorsignals(pattern, W, O):
     D = []
     for i, layer in reversed(enumerate(W)):
         d = []
@@ -90,6 +97,7 @@ def errorsignals(pattern, W):
                         zip(d, W[i + 1])))
         D.append(dnew)
 
+    D = list(reversed(D))
     return D
 
 if __name__ == "__main__":
