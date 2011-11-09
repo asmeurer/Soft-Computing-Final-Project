@@ -5,7 +5,7 @@ This generates subset problems for input to the neural network.
 """
 
 import argparse
-from random import randint
+from random import randint, seed
 from itertools import combinations, combinations_with_replacement
 
 # TODO: Refactor these into command line arguments:
@@ -22,7 +22,7 @@ parser.add_argument('-s', '--seed', metavar='N', type=int,
 
 args = parser.parse_args()
 
-random.seed(args.seed)
+seed(args.seed)
 
 def subsets(seq, k=None, repetition=False):
     """
