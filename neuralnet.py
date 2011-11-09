@@ -11,15 +11,25 @@ from __future__ import division
 import sys
 import random
 import math
+import argparse
 
 NODES = [10, 4, 1]
 eps = 0.1
 eta = 1
 
+parser = argparse.ArgumentParser(description="Runs the neural network.")
+
+parser.add_argument('-s', '--seed', metavar='N', type=int,
+                   help='The random seed used to generate the initial weights.')
+
+args = parser.parse_args()
+
+seed = args.seed
+
 def main():
     patterns = get_problems()
     # Each weight corresponds to the inputs of the node.
-    W = init_weights(patternlength=len(patterns[0][0]))
+    W = init_weights(patternlength=len(patterns[0][0]), seed=seed)
     while objective(patterns) < eps:
         for pattern in patterns:
             return W

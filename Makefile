@@ -4,4 +4,4 @@ all:
 
 nonrandom:
 	./generate_patterns.py -s 42 >| patterns
-	./neuralnet.py
+	./neuralnet.py -s 42
