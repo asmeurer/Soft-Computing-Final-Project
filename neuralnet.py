@@ -41,8 +41,7 @@ def get_problems():
     return problems
 
 def init_weights(patternlength, seed=None, max=1):
-    if seed:
-        random.seed(seed)
+    random.seed(seed)
 
     W = []
     _NODES = [patternlength] + NODES
