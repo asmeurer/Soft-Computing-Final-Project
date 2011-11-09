@@ -75,18 +75,19 @@ def output(pattern, node):
     return sigmoid(activation(pattern, node))
 
 def outputs(pattern, W):
+    # XXX: Now this is wrong.
     O = []
     for layer in W:
         o = []
         for node in layer:
-            o.append(output(pattern, node))
+            o.append(output(o, node))
         O.append(o)
 
     return O
 
-def activation(pattern, node):
-    # XXX: I think this is wrong.
-    assert len(node) == len(pattern)
+def activation(o, node):
+    # XXX: This might be wrong too
+    assert len(node) == len(o)
     return sum(wij*opi for wij, opi in zip(node, pattern[0]))
 
 def errorsignals(pattern, W, O):
@@ -94,10 +95,9 @@ def errorsignals(pattern, W, O):
     for i, layer in reversed(enumerate(W)):
         d = []
         for j, node in enumerate(layer):
+            o = O[i][j]
             if i == len(NODES) - 1:
                 # Outer layer
-                # XXX: This should come from O
-                o = output(pattern, node)
                 dnew.append(sigmoiddiff(o)*(pattern[1] - o))
             else:
                 for d in D[-1]:
