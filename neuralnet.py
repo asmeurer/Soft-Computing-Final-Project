@@ -72,30 +72,37 @@ def sigmoiddiff(fh, k=1):
     """
     return k*fh*(1 - fh)
 
-def output(pattern, W, layer, node):
-    return sigmoid(activation(pattern, W, layer, node))
+def output(pattern, node):
+    return sigmoid(activation(pattern, node))
 
 def outputs(pattern, W):
     O = []
     for layer in W:
+        o = []
         for node in layer:
-            pass
+            o.append(output(pattern, node))
+        O.append(o)
 
-def activation(pattern, W, layer, node):
+    return O
+
+def activation(pattern, node):
     # XXX: I think this is wrong.
-    return sum(wij*opi for wij, opi in zip(W[layer], pattern[0]))
+    assert len(node) == len(pattern)
+    return sum(wij*opi for wij, opi in zip(node, pattern[0]))
 
 def errorsignals(pattern, W, O):
     D = []
     for i, layer in reversed(enumerate(W)):
         d = []
-        for pattern in layer:
+        for j, node in enumerate(layer):
             if i == len(NODES) - 1:
                 # Outer layer
-                o = output(pattern, W, layer, node)
+                # XXX: This should come from O
+                o = output(pattern, node)
                 dnew.append(sigmoiddiff(o)*(pattern[1] - o))
             else:
                 for d in D[-1]:
+                    assert len(d) == len(W[i + 1])
                     dnew.append(sigmioddiff(o)*sum(dd*wj for dd, w in
                         zip(d, W[i + 1])))
         D.append(dnew)
