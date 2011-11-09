@@ -58,7 +58,7 @@ def init_weights(patternlength, seed=None, max=1):
     for i in xrange(len(NODES)):
         w = []
         for j in xrange(NODES[i]):
-            w.append([random.random()*max for k in xrange(_NODES[i + 1])])
+            w.append([random.random()*max for k in xrange(_NODES[i])])
         W.append(w)
 
     return W
@@ -81,24 +81,24 @@ def sigmoiddiff(fh, k=1):
     """
     return k*fh*(1 - fh)
 
-def output(pattern, node):
-    return sigmoid(activation(pattern, node))
+def output(input, node):
+    return sigmoid(activation(input, node))
 
 def outputs(pattern, W):
-    # XXX: Now this is wrong.
     O = []
+    input = pattern[0]
     for layer in W:
         o = []
         for node in layer:
-            o.append(output(o, node))
+            o.append(output(input, node))
         O.append(o)
+        input = o
 
     return O
 
-def activation(o, node):
-    # XXX: This might be wrong too
-    assert len(node) == len(o)
-    return sum(wij*opi for wij, opi in zip(node, pattern[0]))
+def activation(input, node):
+    assert len(node) == len(input)
+    return sum(wij*opi for wij, opi in zip(node, input))
 
 def errorsignals(pattern, W, O):
     D = []
