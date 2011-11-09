@@ -17,11 +17,12 @@ number_of_sets = 100
 parser = argparse.ArgumentParser(description="This generates subset "
     "problems for input to the neural network.")
 
-parser.add_argument('-s', '--seed', metavar='N', type=int, nargs=1,
+parser.add_argument('-s', '--seed', metavar='N', type=int,
                    help='The random seed used to generate the output.')
 
 args = parser.parse_args()
 
+random.seed(args.seed)
 
 def subsets(seq, k=None, repetition=False):
     """
