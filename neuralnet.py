@@ -69,13 +69,15 @@ def objective(patterns):
 def error(pattern):
     pass
 
-def sigmoid(h, k=1):
+# For k = 1, rounding occurs to 1 or 0, so we may need to make it smaller
+# TODO: Use tanh instead
+def sigmoid(h, k=1/20):
     """
     Return 1/(1 + exp(-k*h)).
     """
     return 1/(1 + math.exp(-k*h))
 
-def sigmoiddiff(fh, k=1):
+def sigmoiddiff(fh, k=1/20):
     """
     Return d/dh(f(h)) in terms of f(h), where f(h) = 1/(1 + exp(-k*h)).
     """
