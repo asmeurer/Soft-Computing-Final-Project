@@ -72,15 +72,19 @@ def objective(patterns):
 def error(pattern):
     pass
 
-# For k = 1, rounding occurs to 1 or 0, so we may need to make it smaller
-# TODO: Use tanh instead
 def sigmoid(h, k=1/20):
     """
     Return 1/(1 + exp(-k*h)).
-    """
-    return 1/(1 + math.exp(-k*h))
 
-def sigmoiddiff(fh, k=1/20):
+    Note, it instead calculates (1 + tanh(k*h/2))/2, which is equivalent, but
+    doesn't have problems computing negative numbers with large absolute value.
+
+    Note that it still has the problem where large numbers are rounded to 1.0.
+    I think the solution for this is to use smaller values for k.
+    """
+    return (1 + math.tanh(k*h/2))/2
+
+def sigmoiddiff(fh, k=1/20): # Make sure k is the same here as above
     """
     Return d/dh(f(h)) in terms of f(h), where f(h) = 1/(1 + exp(-k*h)).
     """
