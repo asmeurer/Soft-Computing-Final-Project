@@ -121,6 +121,16 @@ def errorsignals(pattern, W, H, O):
     D = list(reversed(D))
     return D
 
+def adaptweights(W, D, O):
+    newW = []
+    for wlayer, dlayer, olayer in zip(W, D, O):
+        neww = []
+        for wnode, d, o in zip(wlayer, dlayer, olayer):
+            neww.append([w + eta*d*o for w in wnode])
+        newW.append(neww)
+
+    return newW
+
 if __name__ == "__main__":
     main()
     sys.exit(0)
