@@ -81,7 +81,7 @@ def main():
         sets.append(a)
         has_subset = any(sum(i) == 0 for i in subsets(a) if i)
         has_subsets.append(has_subset)
-        print "%s, %s" % (a, has_subset)
+        print "%s, %s" % (tuple(a), has_subset)
     # print "%d/%d" % (sum(int(i) for i in has_subsets), len(has_subsets))
 
 if __name__ == "__main__":
