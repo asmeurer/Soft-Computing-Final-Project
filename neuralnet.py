@@ -82,18 +82,18 @@ def sigmoiddiff(fh, k=1):
     return k*fh*(1 - fh)
 
 def activations_and_outputs(pattern, W):
-    A, O = [], []
+    H, O = [], []
     input = pattern[0]
     for layer in W:
-        a, o = [], []
+        h, o = [], []
         for node in layer:
-            a.append(activation(input, node))
-        A.append(a)
-        o = [sigmoid(i) for i in a]
+            h.append(activation(input, node))
+        H.append(h)
+        o = [sigmoid(i) for i in h]
         O.append(o)
         input = o
 
-    return A, O
+    return H, O
 
 def activation(input, node):
     assert len(node) == len(input)
