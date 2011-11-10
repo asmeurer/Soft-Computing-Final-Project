@@ -32,7 +32,10 @@ def main():
     W = init_weights(patternlength=len(patterns[0][0]), seed=seed)
     while objective(patterns) < eps:
         for pattern in patterns:
-            return W
+            H, O = activations_and_outputs(pattern, W)
+            D = errorsignals(pattern, W, H, O)
+            W = adaptweights(W, D, O)
+            return
 
 def get_problems():
     with open("patterns", 'r') as file:
