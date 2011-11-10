@@ -13,7 +13,7 @@ import random
 import math
 import argparse
 
-NODES = [10, 4, 1]
+NODES = [11, 4, 1]
 eps = 0.1
 eta = 1
 
