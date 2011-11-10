@@ -101,21 +101,22 @@ def activation(input, node):
     assert len(node) == len(input)
     return sum(wij*opi for wij, opi in zip(node, input))
 
-def errorsignals(pattern, W, O):
-    D = []
-    for i, layer in reversed(enumerate(W)):
+def errorsignals(pattern, W, H, O):
+    # Outer layer
+    D = [[sigmoiddiff(o)*(pattern[1] - o) for o in O[-1]]]
+
+    for i, layer in reversed(list(enumerate(W))):
+        if i == len(W) - 1:
+            continue
         d = []
         for j, node in enumerate(layer):
-            o = O[i][j]
-            if i == len(NODES) - 1:
-                # Outer layer
-                dnew.append(sigmoiddiff(o)*(pattern[1] - o))
-            else:
-                for d in D[-1]:
-                    assert len(d) == len(W[i + 1])
-                    dnew.append(sigmioddiff(o)*sum(dd*wj for dd, w in
-                        zip(d, W[i + 1])))
-        D.append(dnew)
+            a = H[i][j]
+            outputws = [W[i + 1][k][j] for k in xrange(len(W[i + 1]))]
+            # XXX: This is wrong
+            assert len(D[-1]) == len(outputws)
+            d.append(sigmoiddiff(o)*sum(dd*w for dd, w in
+                zip(D[-1], outputws)))
+        D.append(d)
 
     D = list(reversed(D))
     return D
