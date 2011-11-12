@@ -1,6 +1,6 @@
 all: patterns network
 
-nonrandom: patterns-nonrandom network
+nonrandom: patterns-nonrandom network-nonrandom
 
 patterns:
 	./generate_patterns.py
