@@ -31,20 +31,16 @@ seed = args.seed
 filename = args.filename
 
 def main():
-#    from pudb import set_trace; set_trace()
     global eta
 
     a = 1
     b = 0.01
     B = [[1 for i in xrange(j)] for j in NODES]
-#    B = [[1]]
     patterns = get_problems(filename)
     # Each weight corresponds to the inputs of the node.
     oldW = init_weights(patternlength=len(patterns[0][0]), max=0)
     W = init_weights(patternlength=len(patterns[0][0]), seed=seed, max=1)
-#    W = [[[1, -1], [-1, 1]], [[1, -1]]]
-#    oldW = [[[0, 0]]]
-#    W = [[[-1, 0]]]
+
     obj = None
     oldobj = None
     outputs = {}
@@ -63,8 +59,7 @@ def main():
                     eta += a
                 elif obj - oldobj > 0:
                     eta -= b*eta
-        print obj, eta, epochs#, B, W
-#        print [(pattern, outputs[pattern][-1][0]) for pattern in patterns]
+        print obj, eta, epochs
         if obj < eps:
             print B, W
             print "Converged in %d epochs." % epochs
@@ -118,14 +113,12 @@ def sigmoid(h, k=1/20):
     Note that it still has the problem where large numbers are rounded to 1.0.
     I think the solution for this is to use smaller values for k.
     """
-#    return int(h > 0)
     return (1 + math.tanh(k*h/2))/2
 
 def sigmoiddiff(fh, k=1/20): # Make sure k is the same here as above
     """
     Return d/dh(f(h)) in terms of f(h), where f(h) = 1/(1 + exp(-k*h)).
     """
-#    return 1
     return k*fh*(1 - fh)
 
 def activations_and_outputs(pattern, W, B):
@@ -158,7 +151,6 @@ def errorsignals(pattern, W, H, O):
         for j, node in enumerate(layer):
             o = O[i][j]
             outputws = [W[i + 1][k][j] for k in xrange(len(W[i + 1]))]
-            # XXX: This is wrong
             assert len(D[-1]) == len(outputws)
             d.append(sigmoiddiff(o)*sum(dd*w for dd, w in
                 zip(D[-1], outputws)))
@@ -185,7 +177,6 @@ def adaptweights(W, D, pattern, O, oldW, B, eta=1, alpha=0.9):
     newW = []
     newB = []
     iO = inputOs(pattern, O)
-#    print iO
 
     for wlayer, dlayer, olayer, wolayer, blayer in zip(W, D, iO, oldW, B):
         neww = []
