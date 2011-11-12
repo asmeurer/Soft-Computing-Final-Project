@@ -61,7 +61,9 @@ def main():
                     eta -= b*eta
         print obj, eta, epochs
         if obj < eps:
-            print B, W
+            with open("weights", 'w') as file:
+                file.write("B = %s\n\nn" % B)
+                file.write("W = %s\n" % W)
             print "Converged in %d epochs." % epochs
             break
 
