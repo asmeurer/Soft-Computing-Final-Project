@@ -86,7 +86,14 @@ def main():
                 file.write("'oldW': %s,\n\n" % oldW)
                 file.write("'eta': %s,\n" % eta)
                 file.write("}\n")
-            print "Converged in %d epochs." % epochs
+            for pattern in patterns:
+                print pattern[1], outputs[pattern][-1][0],
+                if round(outputs[pattern][-1][0]) != pattern[1]:
+                    print False
+                else:
+                    print
+            if obj < eps:
+                print "Converged in %d epochs." % epochs
             break
 
 def get_problems(filename=None):
