@@ -12,7 +12,7 @@ from itertools import combinations, combinations_with_replacement
 
 setrange = 500
 setsize = 10
-number_of_sets = 100
+number_of_sets = 10
 
 parser = argparse.ArgumentParser(description="This generates subset "
     "problems for input to the neural network.")
