@@ -1,7 +1,15 @@
-all:
-	./generate_patterns.py >| patterns
-	./neuralnet.py
+all: patterns network
 
-nonrandom:
+nonrandom: patterns-nonrandom network
+
+patterns:
+	./generate_patterns.py >| patterns
+
+patterns-nonrandom:
 	./generate_patterns.py -s 42 >| patterns
-	./neuralnet.py -s 42
+
+network:
+	./neuralnet.py patterns
+
+network-nonrandom:
+	./neuralnet.py -s 42 patterns
