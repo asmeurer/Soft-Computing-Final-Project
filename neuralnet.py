@@ -21,25 +21,41 @@ eps = 0.1
 parser = argparse.ArgumentParser(description="Runs the neural network.")
 
 parser.add_argument('-s', '--seed', metavar='N', type=int,
-                   help="The random seed used to generate the initial weights.")
-parser.add_argument('filename', type=str, help="Name of the file to "
-                    "run the network on (defaults to 'patterns'")
+                    help="The random seed used to generate the initial weights.")
+parser.add_argument('filename', metavar="FILE", type=str,
+                    help="Name of the file to run the network on.")
+parser.add_argument('-w', '--weights', metavar="FILE", type=str, default=None,
+                    help="Weights file to initialize weights to (defaults "
+                    "random initial weights).")
 
 args = parser.parse_args()
 
 seed = args.seed
 filename = args.filename
+global weights
+weights = args.weights
 
 def main():
     global eta
+    global weights
 
     a = 1
     b = 0.01
-    B = [[1 for i in xrange(j)] for j in NODES]
     patterns = get_problems(filename)
+
     # Each weight corresponds to the inputs of the node.
-    oldW = init_weights(patternlength=len(patterns[0][0]), max=0)
-    W = init_weights(patternlength=len(patterns[0][0]), seed=seed, max=1)
+    if not weights:
+        B = [[1 for i in xrange(j)] for j in NODES]
+        oldW = init_weights(patternlength=len(patterns[0][0]), max=0)
+        W = init_weights(patternlength=len(patterns[0][0]), seed=seed, max=1)
+    else:
+        with open(weights) as file:
+            vars = eval(file.read())
+
+        B = vars['B']
+        W = vars['W']
+        oldW = vars['oldW']
+        eta = vars['eta']
 
     obj = None
     oldobj = None
@@ -54,16 +70,20 @@ def main():
             oldW, (W, B) = W, adaptweights(W, D, pattern, O, oldW, B, eta=eta)
         oldoldobj, oldobj, obj = oldobj, obj, objective(patterns, outputs)
         if True:
-            if oldobj:
-                if obj - oldobj < 0:
+            if oldobj and oldoldobj:
+                if obj - oldobj < 0 and oldobj < oldoldobj:
                     eta += a
                 elif obj - oldobj > 0:
                     eta -= b*eta
         print obj, eta, epochs
-        if obj < eps:
-            with open("weights", 'w') as file:
-                file.write("B = %s\n\nn" % B)
-                file.write("W = %s\n" % W)
+        if obj < eps or epochs == 1000:
+            with open("weights.py", 'w') as file:
+                file.write("{\n")
+                file.write("'B': %s,\n\n" % B)
+                file.write("'W': %s,\n\n" % W)
+                file.write("'oldW': %s,\n\n" % oldW)
+                file.write("'eta': %s,\n" % eta)
+                file.write("}\n")
             print "Converged in %d epochs." % epochs
             break
 
