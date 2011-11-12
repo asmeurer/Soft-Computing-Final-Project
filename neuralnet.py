@@ -76,7 +76,9 @@ def main():
                 elif obj - oldobj > 0:
                     eta -= b*eta
         print obj, eta, epochs
-        if obj < eps or epochs == 1000:
+        if obj < eps and all(round(outputs[pattern][-1][0]) == pattern[1]
+            for pattern in patterns) or epochs == 1000:
+
             with open("weights.py", 'w') as file:
                 file.write("{\n")
                 file.write("'B': %s,\n\n" % B)
