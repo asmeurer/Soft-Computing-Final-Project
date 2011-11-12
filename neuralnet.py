@@ -13,10 +13,10 @@ import random
 import math
 import argparse
 
-NODES = [10, 10, 1]
+NODES = [30, 20, 20, 1]
 global eta
 eta = 1
-eps = 0.1
+eps = 1
 
 parser = argparse.ArgumentParser(description="Runs the neural network.")
 
