@@ -13,3 +13,6 @@ network:
 
 network-nonrandom:
 	./neuralnet.py -s 42 patterns
+
+clean:
+	-rm -f patterns
