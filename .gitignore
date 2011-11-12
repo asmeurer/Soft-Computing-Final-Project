@@ -1,3 +1,4 @@
 patterns
 weights.py
+*.pyc
 .DS_Store
