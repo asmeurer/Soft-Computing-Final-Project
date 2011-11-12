@@ -16,7 +16,7 @@ import argparse
 NODES = [30, 20, 20, 1]
 global eta
 eta = 1
-eps = 1
+eps = .001
 
 parser = argparse.ArgumentParser(description="Runs the neural network.")
 
