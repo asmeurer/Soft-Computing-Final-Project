@@ -1,0 +1,6 @@
+(-1, 0), False
+(0, 1), False
+(1, 0), False
+(1, 1), True
+(1, 2), True
+(2, 2), True
