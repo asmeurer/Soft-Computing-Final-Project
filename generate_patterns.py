@@ -78,13 +78,14 @@ def subsets(seq, k=None, repetition=False):
 def main():
     sets = []
     has_subsets = []
-    for i in range(number_of_sets):
-        a = [(-1)**randint(0, 1)*randint(1, setrange) for i in range(setsize)]
-        sets.append(a)
-        has_subset = any(sum(i) == 0 for i in subsets(a) if i)
-        has_subsets.append(has_subset)
-        print "%s, %s" % (tuple(a), has_subset)
-    # print "%d/%d" % (sum(int(i) for i in has_subsets), len(has_subsets))
+    with open("patterns", 'w') as file:
+        for i in range(number_of_sets):
+            a = [(-1)**randint(0, 1)*randint(1, setrange) for i in range(setsize)]
+            sets.append(a)
+            has_subset = any(sum(i) == 0 for i in subsets(a) if i)
+            has_subsets.append(has_subset)
+            file.write("%s, %s\n" % (tuple(a), has_subset))
+        # print "%d/%d" % (sum(int(i) for i in has_subsets), len(has_subsets))
 
 if __name__ == "__main__":
     main()
