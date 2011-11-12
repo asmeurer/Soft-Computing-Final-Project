@@ -10,17 +10,19 @@ from itertools import combinations, combinations_with_replacement
 
 # TODO: Refactor these into command line arguments:
 
-setrange = 500
-setsize = 10
-number_of_sets = 10
-
 parser = argparse.ArgumentParser(description="This generates subset "
     "problems for input to the neural network.")
 
 parser.add_argument('-s', '--seed', metavar='N', type=int,
-                   help='The random seed used to generate the output.')
+                    help="The random seed used to generate the output.")
+parser.add_argument('-n', '--number', metavar='N', type=int, default=100,
+                    help="The number of sets to generate.")
 
 args = parser.parse_args()
+
+setrange = 500
+setsize = 10
+number_of_sets = args.number
 
 seed(args.seed)
 
