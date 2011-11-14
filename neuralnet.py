@@ -59,11 +59,11 @@ def main(args):
 
     if not 0 <= alpha < 1:
         # TODO: Use ArgumentError
-        raise argparse.ArgumentError(alpha, "alpha must be in [0, 1).")
+        raise parser.error("alpha must be in [0, 1).")
 
     if nodes:
         if any(i <= 0 for i in nodes):
-            raise ValueError("Nodes must all be positive.")
+            raise parser.error("Nodes must all be positive.")
         if nodes[-1] != 1:
             raise NotImplementedError("Only one output node is supported.")
         NODES = nodes
