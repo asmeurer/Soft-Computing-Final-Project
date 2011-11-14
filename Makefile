@@ -1,5 +1,7 @@
 all: patterns patternstest network-test
 
+all-nonrandom: patterns-nonrandom patternstest-nonrandom network-test-nonrandom
+
 nonrandom: patterns-nonrandom network-nonrandom
 
 patterns:
