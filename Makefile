@@ -1,6 +1,6 @@
-all: patterns patternstest network-test
+all: patterns patterns-test network-test
 
-all-nonrandom: patterns-nonrandom patternstest-nonrandom network-test-nonrandom
+all-nonrandom: patterns-nonrandom patterns-test-nonrandom network-test-nonrandom
 
 nonrandom: patterns-nonrandom network-nonrandom
 
