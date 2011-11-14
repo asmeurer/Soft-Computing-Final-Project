@@ -1,4 +1,6 @@
 patterns
+patterns_small
+patterns_test
 weights.py
 *.pyc
 .DS_Store

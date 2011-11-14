@@ -13,6 +13,8 @@ from itertools import combinations, combinations_with_replacement
 parser = argparse.ArgumentParser(description="This generates subset "
     "problems for input to the neural network.")
 
+parser.add_argument('filename', metavar='FILE', type=str,
+                    help="Name of the file to train the network with.")
 parser.add_argument('-s', '--seed', metavar='N', type=int,
                     help="The random seed used to generate the output.")
 parser.add_argument('-n', '--number', metavar='N', type=int, default=100,
@@ -78,7 +80,7 @@ def subsets(seq, k=None, repetition=False):
 def main():
     sets = []
     has_subsets = []
-    with open("patterns", 'w') as file:
+    with open(args.filename, 'w') as file:
         for i in range(number_of_sets):
             a = [(-1)**randint(0, 1)*randint(1, setrange) for i in range(setsize)]
             sets.append(a)
