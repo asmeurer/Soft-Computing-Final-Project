@@ -15,7 +15,7 @@ import argparse
 
 # XXX: If you change the default number of layers, you have to update the help
 #      text for -N below.
-DEFAULT_NODES = [30, 20, 20, 1]
+DEFAULT_NODES = [30, 30, 20, 1]
 
 parser = argparse.ArgumentParser(description="Runs the neural network.")
 
