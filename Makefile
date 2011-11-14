@@ -14,7 +14,7 @@ patterns-test:
 	./generate_patterns.py patterns_test
 
 patterns-test-nonrandom:
-	./generate_patterns.py -s 42 patterns_test
+	./generate_patterns.py -s 43 patterns_test
 
 patterns-small:
 	./generate_patterns.py -n 10 patterns_small
