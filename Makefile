@@ -35,4 +35,4 @@ network-test-nonrandom:
 	./neuralnet.py -s 42 patterns -t patterns_test
 
 clean:
-	-rm -f patterns
+	-rm -f patterns patterns_test patterns_small
