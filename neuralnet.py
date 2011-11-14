@@ -28,7 +28,7 @@ parser.add_argument('-w', '--weights', metavar='FILE', type=str, default=None,
                     "random initial weights).")
 parser.add_argument('-t', '--test', metavar='FILE', type=str,
                     help="File of patterns to test the neural network on.")
-parser.add_argument('-n', '--no-train', dest='notrain', action='store_true',
+parser.add_argument('-n', '--no-train', dest='train', action='store_false',
                     help="Do not attempt to train the network.")
 parser.add_argument('-N', '--nodes', metavar='N', type=int, nargs='+',
                     help="The number of nodes to use per layer. This will be "
@@ -48,7 +48,7 @@ def main(args):
     global weights
     weights = args.weights
     test = args.test
-    notrain = args.notrain
+    train = args.train
     nodes = args.nodes
     eps = args.eps
     alpha = args.alpha
@@ -97,7 +97,9 @@ def main(args):
     oldobj = None
     outputs = {}
     epochs = 0
-    while True:
+    while train:
+        if epochs == 0:
+            print "Objective eta Epochs"
         epochs += 1
         for pattern in patterns:
             H, O = activations_and_outputs(pattern, W, B)
@@ -112,29 +114,51 @@ def main(args):
                 elif obj - oldobj > 0:
                     eta -= b*eta
         print obj, eta, epochs
-        if obj < eps and all(round(outputs[pattern][-1][0]) == pattern[1]
-            for pattern in patterns) or epochs == 1000:
+        if obj < eps and all(round(outputs[pattern][-1][0]) == pattern[1] for
+            pattern in patterns) or epochs == 1000:
 
-            with open("weights.py", 'w') as file:
-                file.write("{\n")
-                file.write("'B': %s,\n\n" % B)
-                file.write("'W': %s,\n\n" % W)
-                file.write("'oldW': %s,\n\n" % oldW)
-                file.write("'eta': %s,\n" % eta)
-                file.write("}\n")
-            for pattern in patterns:
-                print pattern[1], outputs[pattern][-1][0],
-                if round(outputs[pattern][-1][0]) != pattern[1]:
-                    print False
+                with open("weights.py", 'w') as file:
+                    file.write("{\n")
+                    file.write("'B': %s,\n\n" % B)
+                    file.write("'W': %s,\n\n" % W)
+                    file.write("'oldW': %s,\n\n" % oldW)
+                    file.write("'eta': %s,\n" % eta)
+                    file.write("}\n")
+
+                print
+                print "Training Data"
+                print "-------------"
+                for pattern in patterns:
+                    print pattern[1], outputs[pattern][-1][0],
+                    if round(outputs[pattern][-1][0]) != pattern[1]:
+                        print False
+                    else:
+                        print
+
+                if obj < eps:
+                    print "Converged in %d epochs." % epochs
                 else:
-                    print
-            if obj < eps:
-                print "Converged in %d epochs." % epochs
-            break
+                    print "Did not converge in %d epochs." % epochs
 
-def get_problems(filename=None):
-    if not filename:
-        filename = "patterns"
+                break
+    if test:
+        testpatterns = get_problems(test)
+        for pattern in testpatterns:
+            H, O = activations_and_outputs(pattern, W, B)
+            outputs[pattern] = O
+
+        print
+        print "Testing Data"
+        print "------------"
+        for pattern in testpatterns:
+            # print pattern[0],
+            print pattern[1], outputs[pattern][-1][0],
+            if round(outputs[pattern][-1][0]) != pattern[1]:
+                print False
+            else:
+                print
+
+def get_problems(filename):
     with open(filename, 'r') as file:
         problemstxt = file.read()
 
