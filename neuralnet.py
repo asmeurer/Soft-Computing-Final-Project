@@ -13,42 +13,72 @@ import random
 import math
 import argparse
 
-NODES = [30, 20, 20, 1]
-global eta
-eta = 1
-eps = .001
+# XXX: If you change the default number of layers, you have to update the help
+#      text for -N below.
+DEFAULT_NODES = [30, 20, 20, 1]
 
 parser = argparse.ArgumentParser(description="Runs the neural network.")
 
 parser.add_argument('-s', '--seed', metavar='N', type=int,
                     help="The random seed used to generate the initial weights.")
-parser.add_argument('filename', metavar="FILE", type=str,
-                    help="Name of the file to run the network on.")
-parser.add_argument('-w', '--weights', metavar="FILE", type=str, default=None,
+parser.add_argument('filename', metavar='FILE', type=str,
+                    help="Name of the file to train the network with.")
+parser.add_argument('-w', '--weights', metavar='FILE', type=str, default=None,
                     help="Weights file to initialize weights to (defaults "
                     "random initial weights).")
+parser.add_argument('-t', '--test', metavar='FILE', type=str,
+                    help="File of patterns to test the neural network on.")
+parser.add_argument('-n', '--no-train', dest='notrain', action='store_true',
+                    help="Do not attempt to train the network.")
+parser.add_argument('-N', '--nodes', metavar='N', type=int, nargs='+',
+                    help="The number of nodes to use per layer. This will be "
+                    "created automatically if a weight file is provided. "
+                    "Defaults to %d %d %d %d." % tuple(DEFAULT_NODES))
+parser.add_argument('-e', '--eps', metavar='N', type=float, default=1,
+                    help="The epsilon value to check convergence against. "
+                    "Defaults to 1.")
+parser.add_argument('-a', '--alpha', metavar='N', type=float, default=0.9,
+                    help="The alpha value to use when adjusting the weights.")
 
 args = parser.parse_args()
 
-seed = args.seed
-filename = args.filename
-global weights
-weights = args.weights
-
-def main():
-    global eta
+def main(args):
+    seed = args.seed
+    filename = args.filename
     global weights
+    weights = args.weights
+    test = args.test
+    notrain = args.notrain
+    nodes = args.nodes
+    eps = args.eps
+    alpha = args.alpha
 
+    if not 0 <= alpha < 1:
+        # TODO: Use ArgumentError
+        raise argparse.ArgumentError(alpha, "alpha must be in [0, 1).")
+
+    if nodes:
+        if any(i <= 0 for i in nodes):
+            raise ValueError("Nodes must all be positive.")
+        if nodes[-1] != 1:
+            raise NotImplementedError("Only one output node is supported.")
+        NODES = nodes
+    else:
+        NODES = DEFAULT_NODES
+
+    eta = 1
     a = 1
     b = 0.01
     patterns = get_problems(filename)
+    patternlength = len(patterns[0][0])
 
     # Each weight corresponds to the inputs of the node.
     if not weights:
         B = [[1 for i in xrange(j)] for j in NODES]
-        oldW = init_weights(patternlength=len(patterns[0][0]), max=0)
-        W = init_weights(patternlength=len(patterns[0][0]), seed=seed, max=1)
+        oldW = init_weights(patternlength, NODES, seed=seed, max=0)
+        W = init_weights(patternlength, NODES, seed=seed, max=1)
     else:
+        # Note, we don't check consistency among W, oldW, and B
         with open(weights) as file:
             vars = eval(file.read())
 
@@ -56,6 +86,12 @@ def main():
         W = vars['W']
         oldW = vars['oldW']
         eta = vars['eta']
+        if nodes:
+            if NODES != [len(i) for i in B]:
+                raise ArgumentError("The number of nodes given and the weight "
+                    "file do not match.")
+        else:
+            NODES = [len(i) for i in B]
 
     obj = None
     oldobj = None
@@ -67,7 +103,7 @@ def main():
             H, O = activations_and_outputs(pattern, W, B)
             outputs[pattern] = O
             D = errorsignals(pattern, W, H, O)
-            oldW, (W, B) = W, adaptweights(W, D, pattern, O, oldW, B, eta=eta)
+            oldW, (W, B) = W, adaptweights(W, D, pattern, O, oldW, B, NODES, eta, alpha)
         oldoldobj, oldobj, obj = oldobj, obj, objective(patterns, outputs)
         if True:
             if oldobj and oldoldobj:
@@ -114,7 +150,7 @@ def get_problems(filename=None):
 
     return problems
 
-def init_weights(patternlength, seed=None, max=1):
+def init_weights(patternlength, NODES, seed=None, max=1):
     random.seed(seed)
 
     W = []
@@ -190,7 +226,7 @@ def errorsignals(pattern, W, H, O):
     D = list(reversed(D))
     return D
 
-def inputOs(pattern, O):
+def inputOs(pattern, O, NODES):
     """
     Return a the outputs as inputs (including the pattern).
     """
@@ -204,10 +240,10 @@ def inputOs(pattern, O):
 
 # XXX: Is this true any more
 # alpha should be in [0, 1)
-def adaptweights(W, D, pattern, O, oldW, B, eta=1, alpha=0.9):
+def adaptweights(W, D, pattern, O, oldW, B, NODES, eta, alpha):
     newW = []
     newB = []
-    iO = inputOs(pattern, O)
+    iO = inputOs(pattern, O, NODES)
 
     for wlayer, dlayer, olayer, wolayer, blayer in zip(W, D, iO, oldW, B):
         neww = []
@@ -222,5 +258,5 @@ def adaptweights(W, D, pattern, O, oldW, B, eta=1, alpha=0.9):
     return newW, newB
 
 if __name__ == "__main__":
-    main()
+    main(args)
     sys.exit(0)
