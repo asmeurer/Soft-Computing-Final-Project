@@ -1,4 +1,4 @@
-all: patterns patternstest networktest
+all: patterns patternstest network-test
 
 nonrandom: patterns-nonrandom network-nonrandom
 
@@ -29,7 +29,7 @@ network-nonrandom:
 network-test:
 	./neuralnet.py patterns -t patterns_test
 
-network-nonrandom:
+network-test-nonrandom:
 	./neuralnet.py -s 42 patterns -t patterns_test
 
 clean:
