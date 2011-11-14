@@ -40,6 +40,8 @@ parser.add_argument('-e', '--eps', metavar='N', type=float, default=10,
                     "Defaults to 10.")
 parser.add_argument('-a', '--alpha', metavar='N', type=float, default=0.9,
                     help="The alpha value to use when adjusting the weights.")
+parser.add_argument('-v', '--verbose', action='store_true',
+                    help="Print the output of each training and testing pattern.")
 
 args = parser.parse_args()
 
@@ -53,6 +55,7 @@ def main(args):
     nodes = args.nodes
     eps = args.eps
     alpha = args.alpha
+    verbose = args.verbose
 
     if not 0 <= alpha < 1:
         # TODO: Use ArgumentError
@@ -115,18 +118,19 @@ def main(args):
                 elif obj - oldobj > 0:
                     eta -= b*eta
         print obj, eta, epochs
-        if obj < eps and all(round(outputs[pattern][-1][0]) == pattern[1] for
-            pattern in patterns) or epochs == 1000:
+        converged = obj < eps and all(round(outputs[pattern][-1][0]) == pattern[1] for
+            pattern in patterns)
+        if converged or epochs == 1000:
+            with open("weights.py", 'w') as file:
+                file.write("{\n")
+                file.write("'B': %s,\n\n" % B)
+                file.write("'W': %s,\n\n" % W)
+                file.write("'oldW': %s,\n\n" % oldW)
+                file.write("'eta': %s,\n" % eta)
+                file.write("}\n")
 
-                with open("weights.py", 'w') as file:
-                    file.write("{\n")
-                    file.write("'B': %s,\n\n" % B)
-                    file.write("'W': %s,\n\n" % W)
-                    file.write("'oldW': %s,\n\n" % oldW)
-                    file.write("'eta': %s,\n" % eta)
-                    file.write("}\n")
-
-                print
+            print
+            if verbose:
                 print "Training Data"
                 print "-------------"
                 for pattern in patterns:
@@ -136,28 +140,56 @@ def main(args):
                     else:
                         print
 
-                if obj < eps:
-                    print "Converged in %d epochs." % epochs
-                else:
-                    print "Did not converge in %d epochs." % epochs
+            if converged:
+                print "Converged in %d epochs." % epochs
+            else:
+                print "Did not converge in %d epochs." % epochs
 
-                break
+            break
     if test:
         testpatterns = get_problems(test)
         for pattern in testpatterns:
             H, O = activations_and_outputs(pattern, W, B)
             outputs[pattern] = O
 
+        falsepos = 0
+        truepos = 0
+        falseneg = 0
+        trueneg = 0
         print
-        print "Testing Data"
-        print "------------"
+        if verbose:
+            print "Testing Data"
+            print "------------"
         for pattern in testpatterns:
             # print pattern[0],
-            print pattern[1], outputs[pattern][-1][0],
-            if round(outputs[pattern][-1][0]) != pattern[1]:
-                print False
+            if verbose:
+                print pattern[1], outputs[pattern][-1][0],
+            pattern_output = round(outputs[pattern][-1][0])
+            if pattern_output != pattern[1]:
+                if verbose:
+                    print False
+
+                if pattern[1] == 0:
+                    falseneg += 1
+                else:
+                    falsepos += 1
             else:
-                print
+                if verbose:
+                    print
+
+                if pattern[1] == 0:
+                    trueneg += 1
+                else:
+                    truepos += 1
+
+        accuracy = (truepos + trueneg)/len(testpatterns)
+        print
+        print "True Positives: %d" % truepos
+        print "True Negatives: %d" % trueneg
+        print "False Positives: %d" % falsepos
+        print "False Negatives: %d" % falseneg
+        print
+        print "Total accuracy: %f" % accuracy
 
 def get_problems(filename):
     with open(filename, 'r') as file:
