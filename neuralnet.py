@@ -37,9 +37,10 @@ parser.add_argument('-N', '--nodes', metavar='N', type=int, nargs='+',
                     "Defaults to %d %d %d %d." % tuple(DEFAULT_NODES))
 parser.add_argument('-e', '--eps', metavar='N', type=float, default=100,
                     help="The epsilon value to check convergence against. "
-                    "Defaults to 100.")
+                    "Defaults to %(default)s.")
 parser.add_argument('-a', '--alpha', metavar='N', type=float, default=0.9,
-                    help="The alpha value to use when adjusting the weights.")
+                    help="The alpha value to use when adjusting the weights. "
+                    "Defaults to %(default)s.")
 parser.add_argument('-v', '--verbose', action='store_true',
                     help="Print the output of each training and testing pattern.")
 
