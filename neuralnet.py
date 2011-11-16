@@ -162,11 +162,15 @@ def main(args):
 
             if test:
                 print
-                runtest(testpatterns, W, B, outputs, verbose=verbose, partialstats=True)
+                runtest(testpatterns, W, B, outputs, verbose=verbose, partialstats=True,
+                outputdict={'converged': converged, 'epochs': epochs, 'eta': eta,
+                'NODES': NODES, 'obj': obj,})
 
             break
 
-def runtest(testpatterns, W, B, outputs, verbose=False, partialstats=False):
+def runtest(testpatterns, W, B, outputs, verbose=False, partialstats=False,
+    outputdict=None):
+
     for pattern in testpatterns:
         H, O = activations_and_outputs(pattern, W, B)
         outputs[pattern] = O
@@ -209,6 +213,16 @@ def runtest(testpatterns, W, B, outputs, verbose=False, partialstats=False):
         print "False Negatives: %d" % falseneg
         print
         print "Total accuracy: %f" % accuracy
+
+    if outputdict:
+        outputdict['accuracy'] = accuracy
+        outputdict['truepos'] = truepos
+        outputdict['trueneg'] = trueneg
+        outputdict['falsepos'] = falsepos
+        outputdict['falseneg'] = falseneg
+
+        with open("output", 'a') as file:
+            file.write(str(outputdict) + "\n")
 
     return accuracy
 
