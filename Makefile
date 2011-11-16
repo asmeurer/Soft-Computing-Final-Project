@@ -34,5 +34,10 @@ network-test:
 network-test-nonrandom:
 	./neuralnet.py -s 42 patterns -t patterns_test
 
+cython:
+	python build.py build_ext --inplace
+
 clean:
 	-rm -f patterns patterns_test patterns_small
+	-rm -f *.{pyc,c,so}
+	-rm -rf build/
