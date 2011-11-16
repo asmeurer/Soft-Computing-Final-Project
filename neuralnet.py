@@ -58,7 +58,6 @@ def main(args):
     verbose = args.verbose
 
     if not 0 <= alpha < 1:
-        # TODO: Use ArgumentError
         raise parser.error("alpha must be in [0, 1).")
 
     if nodes:
@@ -95,7 +94,7 @@ def main(args):
         eta = vars['eta']
         if nodes:
             if NODES != [len(i) for i in B]:
-                raise ArgumentError("The number of nodes given and the weight "
+                raise parser.error("The number of nodes given and the weight "
                     "file do not match.")
         else:
             NODES = [len(i) for i in B]
