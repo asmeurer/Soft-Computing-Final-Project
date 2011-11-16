@@ -129,7 +129,7 @@ def main(args):
 
         converged = obj < eps and all(round(outputs[pattern][-1][0]) == pattern[1] for
             pattern in patterns)
-        if converged or epochs == 1000:
+        if converged or epochs == 200:
             with open("weights.py", 'w') as file:
                 file.write("{\n")
                 file.write("'B': %s,\n\n" % B)
