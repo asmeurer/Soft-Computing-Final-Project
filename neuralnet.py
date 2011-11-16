@@ -44,6 +44,7 @@ parser.add_argument('-a', '--alpha', metavar='N', type=float, default=0.9,
 parser.add_argument('-v', '--verbose', action='store_true',
                     help="Print the output of each training and testing pattern.")
 parser.add_argument('-m', '--max-epochs', metavar='N', dest='maxepochs', default=200,
+                    type=int,
                     help="The maximum number of epochs to run before quitting. "
                     "Defaults to %(default)s.")
 
@@ -133,7 +134,8 @@ def main(args):
 
         converged = obj < eps and all(round(outputs[pattern][-1][0]) == pattern[1] for
             pattern in patterns)
-        if converged or epochs == maxepochs:
+
+        if converged or epochs >= maxepochs:
             with open("weights.py", 'w') as file:
                 file.write("{\n")
                 file.write("'B': %s,\n\n" % B)
