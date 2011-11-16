@@ -13,8 +13,6 @@ import random
 import math
 import argparse
 
-from cythonutils import cythonized
-
 # XXX: If you change the default number of layers, you have to update the help
 #      text for -N below.
 DEFAULT_NODES = [80, 80, 80, 1]
@@ -51,8 +49,6 @@ parser.add_argument('-m', '--max-epochs', metavar='N', dest='maxepochs', default
 
 args = parser.parse_args()
 
-@cythonized(intspecs='patternlength',
-            floatspecs='alpha eta a b eps obj oldobj oldoldobj')
 def main(args):
     filename = args.filename
     seed = args.seed
@@ -168,8 +164,6 @@ def main(args):
 
             break
 
-@cythonized(intspecs='pattern_output falsepos truepos falseneg trueneg',
-            floatspecs='accuracy')
 def runtest(testpatterns, W, B, outputs, verbose=False, partialstats=False):
     for pattern in testpatterns:
         H, O = activations_and_outputs(pattern, W, B)
@@ -232,7 +226,6 @@ def get_problems(filename):
 
     return problems
 
-@cythonized(intspecs='i randint k', floatspecs='max randfloat')
 def init_weights(patternlength, NODES, seed=None, max=1):
     random.seed(seed)
 
@@ -241,9 +234,7 @@ def init_weights(patternlength, NODES, seed=None, max=1):
     for i in xrange(len(NODES)):
         w = []
         for j in xrange(NODES[i]):
-            randfload = random.random()
-            randint = random.randint(0, 1)
-            w.append([randfload*max*(-1)**randint
+            w.append([random.random()*max*(-1)**random.randint(0, 1)
                 for k in xrange(_NODES[i])])
         W.append(w)
 
@@ -255,7 +246,6 @@ def objective(patterns, outputs):
 def error(pattern, O):
     return (pattern[1] - O[-1][0])**2/2
 
-@cythonized(floatspecs='k h')
 def sigmoid(h, k=1/20):
     """
     Return 1/(1 + exp(-k*h)).
@@ -268,7 +258,6 @@ def sigmoid(h, k=1/20):
     """
     return (1 + math.tanh(k*h/2))/2
 
-@cythonized(floatspecs='fh k')
 def sigmoiddiff(fh, k=1/20): # Make sure k is the same here as above
     """
     Return d/dh(f(h)) in terms of f(h), where f(h) = 1/(1 + exp(-k*h)).
@@ -289,13 +278,11 @@ def activations_and_outputs(pattern, W, B):
 
     return H, O
 
-@cythonized(floatspecs='wij opi bias')
 def activation(input, node, bias=0):
     assert len(node) == len(input)
     return sum(wij*opi for wij, opi in zip(node, input)) + bias
 
 # XXX: H is not needed here.
-@cythonized(intspecs='i', floatspecs='o dd w')
 def errorsignals(pattern, W, H, O):
     # Outer layer
     D = [[sigmoiddiff(o)*(pattern[1] - o) for o in O[-1]]]
@@ -315,7 +302,6 @@ def errorsignals(pattern, W, H, O):
     D = list(reversed(D))
     return D
 
-@cythonized(intspecs='i n')
 def inputOs(pattern, O, NODES):
     """
     Return a the outputs as inputs (including the pattern).
@@ -330,9 +316,7 @@ def inputOs(pattern, O, NODES):
 
 # XXX: Is this true any more
 # alpha should be in [0, 1)
-@cythonized(floatspecs='w eta d o alpha wo')
 def adaptweights(W, D, pattern, O, oldW, B, NODES, eta, alpha):
-    # TODO: Make this noncopy
     newW = []
     newB = []
     iO = inputOs(pattern, O, NODES)
