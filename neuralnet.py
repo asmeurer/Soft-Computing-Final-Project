@@ -35,9 +35,9 @@ parser.add_argument('-N', '--nodes', metavar='N', type=int, nargs='+',
                     help="The number of nodes to use per layer. This will be "
                     "created automatically if a weight file is provided. "
                     "Defaults to %d %d %d %d." % tuple(DEFAULT_NODES))
-parser.add_argument('-e', '--eps', metavar='N', type=float, default=10,
+parser.add_argument('-e', '--eps', metavar='N', type=float, default=100,
                     help="The epsilon value to check convergence against. "
-                    "Defaults to 10.")
+                    "Defaults to 100.")
 parser.add_argument('-a', '--alpha', metavar='N', type=float, default=0.9,
                     help="The alpha value to use when adjusting the weights.")
 parser.add_argument('-v', '--verbose', action='store_true',
