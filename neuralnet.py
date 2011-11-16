@@ -75,6 +75,9 @@ def main(args):
     b = 0.01
     patterns = get_problems(filename)
     patternlength = len(patterns[0][0])
+    if test:
+        testpatterns = get_problems(test)
+
 
     # Each weight corresponds to the inputs of the node.
     if not weights:
@@ -103,7 +106,7 @@ def main(args):
     epochs = 0
     while train:
         if epochs == 0:
-            print "Objective eta Epochs"
+            print "Objective eta Epochs Accuracy"
         epochs += 1
         for pattern in patterns:
             H, O = activations_and_outputs(pattern, W, B)
@@ -117,7 +120,13 @@ def main(args):
                     eta += a
                 elif obj - oldobj > 0:
                     eta -= b*eta
-        print obj, eta, epochs
+
+        if test:
+            accuracy = runtest(testpatterns, W, B, outputs)
+        else:
+            accuracy = ''
+        print obj, eta, epochs, accuracy
+
         converged = obj < eps and all(round(outputs[pattern][-1][0]) == pattern[1] for
             pattern in patterns)
         if converged or epochs == 1000:
@@ -145,44 +154,48 @@ def main(args):
             else:
                 print "Did not converge in %d epochs." % epochs
 
+            if test:
+                print
+                runtest(testpatterns, W, B, outputs, verbose=verbose, partialstats=True)
+
             break
-    if test:
-        testpatterns = get_problems(test)
-        for pattern in testpatterns:
-            H, O = activations_and_outputs(pattern, W, B)
-            outputs[pattern] = O
 
-        falsepos = 0
-        truepos = 0
-        falseneg = 0
-        trueneg = 0
-        print
+def runtest(testpatterns, W, B, outputs, verbose=False, partialstats=False):
+    for pattern in testpatterns:
+        H, O = activations_and_outputs(pattern, W, B)
+        outputs[pattern] = O
+
+    falsepos = 0
+    truepos = 0
+    falseneg = 0
+    trueneg = 0
+    if verbose:
+        print "Testing Data"
+        print "------------"
+    for pattern in testpatterns:
+        # print pattern[0],
         if verbose:
-            print "Testing Data"
-            print "------------"
-        for pattern in testpatterns:
-            # print pattern[0],
+            print pattern[1], outputs[pattern][-1][0],
+        pattern_output = round(outputs[pattern][-1][0])
+        if pattern_output != pattern[1]:
             if verbose:
-                print pattern[1], outputs[pattern][-1][0],
-            pattern_output = round(outputs[pattern][-1][0])
-            if pattern_output != pattern[1]:
-                if verbose:
-                    print False
+                print False
 
-                if pattern[1] == 0:
-                    falseneg += 1
-                else:
-                    falsepos += 1
+            if pattern[1] == 0:
+                falseneg += 1
             else:
-                if verbose:
-                    print
+                falsepos += 1
+        else:
+            if verbose:
+                print
 
-                if pattern[1] == 0:
-                    trueneg += 1
-                else:
-                    truepos += 1
+            if pattern[1] == 0:
+                trueneg += 1
+            else:
+                truepos += 1
 
-        accuracy = (truepos + trueneg)/len(testpatterns)
+    accuracy = (truepos + trueneg)/len(testpatterns)
+    if partialstats:
         print
         print "True Positives: %d" % truepos
         print "True Negatives: %d" % trueneg
@@ -190,6 +203,8 @@ def main(args):
         print "False Negatives: %d" % falseneg
         print
         print "Total accuracy: %f" % accuracy
+
+    return accuracy
 
 def get_problems(filename):
     with open(filename, 'r') as file:
