@@ -60,9 +60,9 @@
     \begin{itemize}
         \item The subset sum problem is NP-Complete.
         \pause
-        \item In general terms, it means that no one knows how to solve the problem efficiently.
+        \item In general terms, this means that no one knows how to solve the problem efficiently.
         \pause
-        \item The brute force approach requires checking all $2^n - 1$ subsets of a set of size $n$, which, due the exponential growth with respect to $n$, become unpractical for all but small $n$.
+        \item The brute force approach requires checking all $2^n - 1$ subsets for a set of size $n$, which, due the exponential growth with respect to $n$, makes it unpractical for all but small $n$.
     \end{itemize}
 \end{frame}
 
@@ -106,7 +106,7 @@
                \eta_n & \text{otherwise}
           \end{cases},
         \end{equation}
-        where $E=\sum{(ti - oi)^2}/2$ is the total error.
+        where $E_n=\sum_i{(t_i - o_i)^2}/2$ is the total error for epoch $n$.
         \pause
         \item Only increasing $\eta$ when the error decreases two times in a row is important; if we just use $E_{n - 1} < E_{n - 2}$, $E$ will oscillate.
         \pause
@@ -126,17 +126,19 @@
         \item The first three layers have $n$ nodes, and the last layer has one node (for binary output).
         \pause
         \item I tested for $n\in\{10, 20, \ldots, 80\}$.
+        \pause
+        \item The activation for each node was the sigmoid (actually, a scaled hyperbolic tangent) function with $k=\frac{1}{20}$.
     \end{itemize}
 \end{frame}
 
 \begin{frame}
     \frametitle{Pattern Set}
     \begin{itemize}
-        \item Problems are already sets of numbers, so encode them as they are.
+        \item Input patterns are already sets of numbers, so encode them as they are.
         \pause
         \item A simple script generates problems, and tests if they satisfy the property.
         \pause
-        \item Generate 100 sets of 10 numbers ranging from -500 to 500.
+        \item Generate 100 sets of 10 integer numbers ranging from -500 to 500 (not including 0).
         \pause
         \item This seemed to satisfy the property roughly 50\% of the time.
     \end{itemize}
@@ -159,7 +161,9 @@
         (-83, -90, -495, -304, -300, -406, -418, 365, -90, -64), 0
         \end{alltt}
         \normalsize
-        \item The first item is the set, and the second is 1 if the set satisfies the property and 0 otherwise (this is the output).
+        \pause
+        \item The first item is the set.
+        \item The second is 1 if the set satisfies the property and 0 otherwise (this is the output).
         \pause
         \item Output of the network is considered a 1 if it is $\geq 0.5$ and 0 otherwise.
     \end{itemize}
@@ -168,18 +172,18 @@
 \begin{frame}
     \frametitle{Convergence}
     \begin{itemize}
-        \item \textbf{Convergence condition: } The network is considered to have converged if all outputs of for the training set are correct.
+        \item \textbf{Convergence condition: } The network is considered to have converged if all outputs for the training set are correct.
         \pause
         \item Give up after 200 iterations (convergence is unlikely at that point).
         \pause
-        \item Do not use the total error $E$.
+        \item \textit{Do not} use the total error $E$.
         \pause
         \begin{itemize}
             \item This does not seem to make a difference, and setting an $\epsilon$ too low can lead to over training.
             \pause
             \item Total error must be no larger than $\sum_{i=1}^{100}{0.5^2}/2=12.5$ for all testing data to be correct.
             \pause
-            \item The network usually starts with $E$ around this number.
+            \item The network usually starts with $E$ around this number with random weights.
             \pause
             \item Usually $E < 1$ if convergence is achieved.
         \end{itemize}
@@ -207,6 +211,9 @@
 \begin{frame}
     \frametitle{Results}
     \textbf{The big question: does it work?}
+    \uncover<4->{\textbf{Answer: No}}
+    \normalsize
+    \uncover<1-2>{
     \begin{itemize}
         \item Actual average output of the test data:\\
         $0.46 \pm 0.088$ (two standard deviations), i.e., $[0.372, 0.548]$.
@@ -235,39 +242,40 @@
                 \hline
             \end{tabular}
     \end{itemize}
+    }
 \end{frame}
 
 \begin{frame}
     \frametitle{Results}
-    \textbf{The big question: does it work?}
     \begin{itemize}
-        \item \textbf{Answer: No}
-        \pause
         \item Increasing the number of nodes doesn't even in increase the accuracy.
         \pause
         \item All it does is increase the rate of convergence:\\
-        \begin{tabular}{|c|c|}
+        \footnotesize
+        \begin{tabular}{|c|c|c|}
             \hline
-            Node & \% of training patterns that \\
-            architecture & converged in $< 200$ epochs\\
+            Node & \% of training patterns & Average number \\
+            architecture &  that converged & of epochs to converge\\
+             & in $< 200$ epochs &  for such patterns\\
             \hline
-            (10, 10, 10, 1) & 0.0\\
+            (10, 10, 10, 1) & 0.0 & --\\
             \hline
-            (20, 20, 20, 1) & 0.14\\
+            (20, 20, 20, 1) & 0.14 & 152.0\\
             \hline
-            (30, 30, 30, 1) & 0.33\\
+            (30, 30, 30, 1) & 0.33 & 105.7\\
             \hline
-            (40, 40, 40, 1) & 0.19\\
+            (40, 40, 40, 1) & 0.19 & 119.5\\
             \hline
-            (50, 50, 50, 1) & 0.38\\
+            (50, 50, 50, 1) & 0.38 & 109.6\\
             \hline
-            (60, 60, 60, 1) & 0.57\\
+            (60, 60, 60, 1) & 0.57 & 71.3\\
             \hline
-            (70, 70, 70, 1) & 0.71\\
+            (70, 70, 70, 1) & 0.71 & 76.7\\
             \hline
-            (80, 80, 80, 1) & 0.76\\
+            (80, 80, 80, 1) & 0.76 & 56.0\\
             \hline
         \end{tabular}
+        \normalsize
     \end{itemize}
 \end{frame}
 
@@ -278,7 +286,7 @@
     \begin{itemize}
         \item I wasn't really expecting this to work (NP-Complete problems are very hard).
         \pause
-        \item Even if it did work, it would be very inefficient (just computing all the subsets for lists of length 10 taks no time at all).
+        \item Even if it did work, it would be very inefficient (on the other hand, computing all the subsets for sets of size 10 is instantaneous).
         \pause
         \item And it also wouldn't generalize to sets with more than $n$ elements.
     \end{itemize}
