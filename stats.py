@@ -33,16 +33,17 @@ def main(args):
             for key2 in outputdict:
                 if key2 == key1:
                     continue
-                o = outputs[key1]
+                o = outputdict[key1]
                 if isinstance(o, list):
                     o = tuple(o)
                 if o not in bydict[key1]:
-                    bydict[key1] = {key2: outputdict[key2]}
+                    bydict[key1][o] = {key2: [outputdict[key2]]}
                 else:
-                    if outputdict[key2] not in bydict[key1][o]:
-                        bydict[key1][o] = [outputdict[key2]]
+                    if key2 not in bydict[key1][o]:
+                        bydict[key1][o][key2] = [outputdict[key2]]
                     else:
-                        bydict[key1][o].append(outputdict[key2])
+                        bydict[key1][o][key2].append(outputdict[key2])
+    return
 
 
 def getoutputs(filename):
