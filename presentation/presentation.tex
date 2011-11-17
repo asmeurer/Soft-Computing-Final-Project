@@ -194,14 +194,113 @@
 
 \begin{frame}
     \frametitle{Results}
+    \textbf{Plan:}
     \begin{itemize}
-        \item \textbf{Plan:}
+        \item Generate 100 training patterns and 100 testing patterns.
+        \pause
+        \item Run the network for $n\in \{10, 20, \ldots, 80\}$.
+        \pause
+        \item Repeat a total of 21 times (I will do 50 for the report)
+    \end{itemize}
+\end{frame}
+
+\begin{frame}
+    \frametitle{Results}
+    \textbf{The big question: does it work?}
+    \begin{itemize}
+        \item Actual average output of the test data:\\
+        $0.46 \pm 0.088$ (two standard deviations), i.e., $[0.372, 0.548]$.
+        \pause
+        \item Output of the network:\\
+            \begin{tabular}{|c|c|c|c|}
+                \hline
+                Node & Mean & Mean accuracy \\
+                architecture & accuracy & $\pm 2*\text{standard deviation}$ \\
+                \hline
+                (10, 10, 10, 1) & 0.4948 & [0.3844, 0.6051]\\
+                \hline
+                (20, 20, 20, 1) & 0.5167  & [0.4158, 0.6176]\\
+                \hline
+                (30, 30, 30, 1) & 0.4952  & [0.4091, 0.5813]\\
+                \hline
+                (40, 40, 40, 1) & 0.5105  & [0.4128, 0.6082]\\
+                \hline
+                (50, 50, 50, 1) & 0.5014  & [0.4090, 0.5939]\\
+                \hline
+                (60, 60, 60, 1) & 0.5210  & [0.4341, 0.6078]\\
+                \hline
+                (70, 70, 70, 1) & 0.5148  & [0.4171, 0.6125]\\
+                \hline
+                (80, 80, 80, 1) & 0.5090  & [0.4242, 0.5939]\\
+                \hline
+            \end{tabular}
+    \end{itemize}
+\end{frame}
+
+\begin{frame}
+    \frametitle{Results}
+    \textbf{The big question: does it work?}
+    \begin{itemize}
+        \item \textbf{Answer: No}
+        \pause
+        \item Increasing the number of nodes doesn't even in increase the accuracy.
+        \pause
+        \item All it does is increase the rate of convergence:\\
+        \begin{tabular}{|c|c|}
+            \hline
+            Node & \% of training patterns that \\
+            architecture & converged in $< 200$ epochs\\
+            \hline
+            (10, 10, 10, 1) & 0.0\\
+            \hline
+            (20, 20, 20, 1) & 0.14\\
+            \hline
+            (30, 30, 30, 1) & 0.33\\
+            \hline
+            (40, 40, 40, 1) & 0.19\\
+            \hline
+            (50, 50, 50, 1) & 0.38\\
+            \hline
+            (60, 60, 60, 1) & 0.57\\
+            \hline
+            (70, 70, 70, 1) & 0.71\\
+            \hline
+            (80, 80, 80, 1) & 0.76\\
+            \hline
+        \end{tabular}
+    \end{itemize}
+\end{frame}
+
+\section{Conclusions}
+
+\begin{frame}
+    \frametitle{Conclusions}
+    \begin{itemize}
+        \item I wasn't really expecting this to work (NP-Complete problems are very hard).
+        \pause
+        \item Even if it did work, it would be very inefficient (just computing all the subsets for lists of length 10 taks no time at all).
+        \pause
+        \item And it also wouldn't generalize to sets with more than $n$ elements.
+    \end{itemize}
+\end{frame}
+
+\begin{frame}
+    \frametitle{Other possible things to look at}
+    \begin{itemize}
+        \item Given that a set satisfies the property, can a network find the subset?
+        \pause
         \begin{itemize}
-            \item Generate 100 training patterns and 100 testing patterns.
+            \item Make a network with $n$ output nodes and train the network to return a 1 in each node corresponding to elements of the set to pick.
             \pause
-            \item Run the network for $n\in \{10, 20, \ldots, 80\}$.
-            \pause
-            \item Repeat
+            \item For example, [1, 5, -14, -6, 3] would return [1, 1, 0, 1, 0].
+        \end{itemize}
+        \pause
+        \item Compute errors based on how ``close'' the network was.
+        \item In other words, use the floating point output of the network, rather than rounding it to 0 or 1.
+        \pause
+        \item Find some measure of how ``close'' a set that doesn't satisfy the property is to satisfying it, and compare that to the error of the set.
+        \begin{itemize}
+            \item e.g., $\{2, 4\}$ is not close, but $\{-1, 2\}$ is.
         \end{itemize}
     \end{itemize}
 \end{frame}
