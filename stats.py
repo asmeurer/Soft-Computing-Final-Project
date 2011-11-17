@@ -88,6 +88,23 @@ def main(args):
         print NODES, mean_convergences
     print
 
+    ###################################################
+    print "Stat 4: Epochs per NODES (for converged)"
+    print "NODES, mean epochs, std epochs, mean +/- 2*std"
+    for NODES in sorted(bydict['NODES'].keys()):
+        epochs = []
+        for i, converged in enumerate(bydict['NODES'][NODES]['converged']):
+            if converged:
+                epochs.append(bydict['NODES'][NODES]['epochs'])
+        if not epochs:
+            print NODES, "--", "--", "[--, --]"
+            continue
+        mean_epochs = mean(epochs)
+        std_epochs = std(epochs)
+        print NODES, mean_epochs, std_epochs,
+        print [mean_epochs - 2*std_epochs, mean_epochs + 2*std_epochs]
+    print
+
     return
 
 
