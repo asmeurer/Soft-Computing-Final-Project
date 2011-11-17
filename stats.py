@@ -90,6 +90,7 @@ def main(args):
 
     ###################################################
     print "Stat 4: Epochs per NODES (for converged)"
+    print "----------------------------------------"
     print "NODES, mean epochs, std epochs, mean +/- 2*std"
     for NODES in sorted(bydict['NODES'].keys()):
         epochs = []
