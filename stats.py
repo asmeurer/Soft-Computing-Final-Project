@@ -46,17 +46,17 @@ def main(args):
 
 
 def getoutputs(filename):
-        with open(filename) as file:
-            outputtxt = file.read()
+    with open(filename) as file:
+        outputtxt = file.read()
 
-        outputs = []
+    outputs = []
 
-        for line in outputtxt.split('\n'):
-            if not line:
-                # Handle blanke lines at the end of the file
-                continue
+    for line in outputtxt.split('\n'):
+        if not line:
+            # Handle blanke lines at the end of the file
+            continue
 
-            outputs.append(eval(line))
+        outputs.append(eval(line))
 
     return outputs
 
