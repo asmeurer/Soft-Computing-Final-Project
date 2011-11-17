@@ -21,6 +21,7 @@
 \usepackage{subfigure}
 \usepackage{graphicx}
 \usepackage{pdfpages}
+\usepackage{alltt}
 % use \usepackage[pdfborder=0in]{hyperref} instead to disable red box links
 %\usepackage[T1]{fontenc}
 
@@ -34,10 +35,10 @@
     \titlepage
 \end{frame}
 
-\begin{frame} 
-    \frametitle{Agenda} 
-    \tableofcontents 
-\end{frame} 
+\begin{frame}
+    \frametitle{Agenda}
+    \tableofcontents
+\end{frame}
 
 \section{Introduction to the Problem}
 
@@ -86,6 +87,34 @@
         \item Initialize bias node weights to 1.
         \pause
         \item Train the bias nodes with the same backpropagation rule as the other nodes.
+        \pause
+        \item The bias nodes are essential if the test set contains the pattern $[0, 0, \ldots, 0]$.
+    \end{itemize}
+\end{frame}
+
+\begin{frame}
+    \frametitle{Parameters}
+    \begin{itemize}
+        \item $\eta_1 = 1$ (learning rate)
+        \pause
+        \item Update with rule:
+        \begin{equation}
+            \eta_{n+1} =
+            \begin{cases}
+               \eta_n + a & \text{if } E_n < E_{n - 1} \text{ and } E_{n - 1} < E_{n - 2} \\
+               \eta_n*b & \text{if }E_n > E_{n - 1} \\
+               \eta_n & \text{otherwise}
+          \end{cases},
+        \end{equation}
+        where $E=\sum{(ti - oi)^2}/2$ is the total error.
+        \pause
+        \item Only increasing $\eta$ when the error decreases two times in a row is important; if we just use $E_{n - 1} < E_{n - 2}$, $E$ will oscillate.
+        \pause
+        \item Use $a=1$ and $b=0.01$.
+        \pause
+        \item Using a large $a$ leads to much faster convergence.
+        \pause
+        \item Use $\alpha = 0.9$ (momentum parameter)
     \end{itemize}
 \end{frame}
 
@@ -98,6 +127,66 @@
         \pause
         \item I tested for $n\in\{10, 20, \ldots, 80\}$.
     \end{itemize}
+\end{frame}
+
+\begin{frame}
+    \frametitle{Pattern Set}
+    \begin{itemize}
+        \item Problems are already sets of numbers, so encode them as they are.
+        \pause
+        \item A simple script generates problems, and tests if they satisfy the property.
+        \pause
+        \item Generate 100 sets of 10 numbers ranging from -500 to 500.
+        \pause
+        \item This seemed to satisfy the property roughly 50\% of the time.
+    \end{itemize}
+\end{frame}
+
+\begin{frame}
+    \frametitle{Pattern Set}
+    \begin{itemize}
+        \item \textbf{Example:}
+        \footnotesize
+        % For some reason, verbatim doesn't work here.
+        \begin{alltt}
+        (-337, -98, -274, 438, -135, 22, -6, 315, -188, -67), 1\\
+        (-457, -344, 275, 466, 112, 391, 218, 86, -339, -332), 1\\
+        (-60, 329, -4, 363, -383, 166, -313, 382, -134, -307), 0\\
+        (1, 470, 156, 497, -90, -349, 267, -186, -418, 296), 1\\
+        (22, -147, -260, -99, 199, -209, -131, 266, 278, 482), 1\\
+        (53, 35, 360, -18, 85, 103, 447, -320, -141, 307), 0\\
+        (398, -273, 382, -54, -192, 58, 79, -167, 277, 143), 1\\
+        (-83, -90, -495, -304, -300, -406, -418, 365, -90, -64), 0
+        \end{alltt}
+        \normalsize
+        \item The first item is the set, and the second is 1 if the set satisfies the property and 0 otherwise (this is the output).
+        \pause
+        \item Output of the network is considered a 1 if it is $\geq 0.5$ and 0 otherwise.
+    \end{itemize}
+\end{frame}
+
+\begin{frame}
+    \frametitle{Convergence}
+    \begin{itemize}
+        \item \textbf{Convergence condition: } The network is considered to have converged if all outputs of for the training set are correct.
+        \pause
+        \item Give up after 200 iterations (convergence is unlikely at that point).
+        \pause
+        \item Do not use the total error $E$.
+        \pause
+        \begin{itemize}
+            \item This does not seem to make a difference, and setting an $\epsilon$ too low can lead to over training.
+            \pause
+            \item Total error must be no larger than $\sum_{i=1}^{100}{0.5^2}/2=12.5$ for all testing data to be correct.
+            \pause
+            \item The network usually starts with $E$ around this number.
+        \end{itemize}
+    \end{itemize}
+\end{frame}
+\section{Results}
+
+\begin{frame}
+    \frametitle{Results}
 \end{frame}
 
 \section{Questions}
