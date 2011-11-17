@@ -1,16 +1,17 @@
 #!/usr/bin/env python
 """
-Compute stastics from the outputs of the neural network.
+Compute statistics from the outputs of the neural network.
 
 This uses numpy to compute the mean and standard deviation.
 """
 
+from __future__ import division
 import argparse
 import sys
 
 from numpy import mean, std
 
-parser = argparse.ArgumentParser(description="This computes stastics "
+parser = argparse.ArgumentParser(description="This computes statistics "
     "from the outputs of the neural network.")
 
 parser.add_argument('filename', metavar='FILE', type=str,
@@ -24,7 +25,7 @@ def main(args):
     # Create a dictionary of dictionaries for each data attribute
     # that has a list of the corresponding attributes.
     # For example, bydict['NODES'][(30, 30, 30, 1)]['accuracy'] will give you
-    # a list of all the accuracies for outputs with NODES = [30, 30, 30, 1]
+    # a list of all the accuracies for outputs with NODES == [30, 30, 30, 1]
     bydict = {}
     for key in outputs[0]:
         bydict[key] = {}
@@ -43,6 +44,50 @@ def main(args):
                         bydict[key1][o][key2] = [outputdict[key2]]
                     else:
                         bydict[key1][o][key2].append(outputdict[key2])
+
+    ###################################################
+    print "Stat 1: accuracy by NODES"
+    print "-------------------------"
+    print "NODES, mean accuracy, std accuracy, mean +/- 2*std"
+    for NODES in sorted(bydict['NODES'].keys()):
+        accuracies = bydict['NODES'][NODES]['accuracy']
+        mean_accuracies = mean(accuracies)
+        std_accuracies = std(accuracies)
+        print NODES, mean_accuracies, std_accuracies,
+        print [mean_accuracies - 2*std_accuracies, mean_accuracies + 2*std_accuracies]
+    print
+
+    ###################################################
+    print "Stat 2: Average output of the test patterns"
+    print "-------------------------------------------"
+    mean_ones = []
+    for NODES in bydict['NODES']:
+        for trueneg, falseneg, truepos, falsepos in zip(
+            bydict['NODES'][NODES]['trueneg'],
+            bydict['NODES'][NODES]['falseneg'],
+            bydict['NODES'][NODES]['truepos'],
+            bydict['NODES'][NODES]['falsepos']):
+
+                m = (truepos + falsepos)/(trueneg + falseneg + truepos + falsepos)
+                mean_ones.append(m)
+
+    mean_mean_ones = mean(mean_ones)
+    std_mean_ones = std(mean_ones)
+    print "mean ones, std, mean +/- 2*std"
+    print mean_mean_ones, std_mean_ones,
+    print [mean_mean_ones - 2*std_mean_ones, mean_mean_ones + 2*std_mean_ones]
+    print
+
+    ###################################################
+    print "Stat 3: convergence by NODES"
+    print "---------------------------"
+    print "NODES, mean convergences"
+    for NODES in sorted(bydict['NODES'].keys()):
+        convergences = map(int, bydict['NODES'][NODES]['converged'])
+        mean_convergences = mean(convergences)
+        print NODES, mean_convergences
+    print
+
     return
 
 
@@ -54,7 +99,7 @@ def getoutputs(filename):
 
     for line in outputtxt.split('\n'):
         if not line:
-            # Handle blanke lines at the end of the file
+            # Handle blank lines at the end of the file
             continue
 
         outputs.append(eval(line))
