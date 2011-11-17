@@ -96,7 +96,7 @@ def main(args):
         epochs = []
         for i, converged in enumerate(bydict['NODES'][NODES]['converged']):
             if converged:
-                epochs.append(bydict['NODES'][NODES]['epochs'])
+                epochs.append(bydict['NODES'][NODES]['epochs'][i])
         if not epochs:
             print NODES, "--", "--", "[--, --]"
             continue
