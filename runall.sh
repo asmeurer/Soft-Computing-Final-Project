@@ -10,6 +10,7 @@ do
     ./generate_patterns.py patterns_test
     for j in {10..80..10}
     do
+        echo
         echo "NODES = [$j $j $j 1]"
         ./neuralnet.py patterns -t patterns_test -N $j $j $j 1
     done
