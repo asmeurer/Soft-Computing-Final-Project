@@ -180,9 +180,16 @@
             \item Total error must be no larger than $\sum_{i=1}^{100}{0.5^2}/2=12.5$ for all testing data to be correct.
             \pause
             \item The network usually starts with $E$ around this number.
+            \pause
+            \item Usually $E < 1$ if convergence is achieved.
         \end{itemize}
+        \pause
+        \item Sometimes, the network does not converge, because one or two patterns is ``stuck'' on the wrong side of 0.5.
+        \pause
+        \item So test regardless if we reach convergence or not.
     \end{itemize}
 \end{frame}
+
 \section{Results}
 
 \begin{frame}
