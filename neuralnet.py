@@ -21,7 +21,7 @@ parser = argparse.ArgumentParser(description="Runs the neural network.")
 
 
 parser.add_argument('filename', metavar='FILE', type=str,
-                    help="Name of the file to train the network with.")
+                    help="Name of the file of patterns to train the network with.")
 parser.add_argument('-s', '--seed', metavar='N', type=int,
                     help="The random seed used to generate the initial weights.")
 parser.add_argument('-w', '--weights', metavar='FILE', type=str, default=None,
