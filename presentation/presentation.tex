@@ -39,6 +39,67 @@
     \tableofcontents 
 \end{frame} 
 
+\section{Introduction to the Problem}
+
+\begin{frame}
+    \frametitle{Subset Sum Problem}
+    \begin{itemize}
+        \item \textbf{Problem:} Given a finite set of positive and negative integers, determine if there exists a subset that sums to zero.
+        \pause
+        \item Formally, given a finite set $A \subset \mathbb{Z}_+ \cup \mathbb{Z}_-$, determine if there exists $B \subseteq A$ such that $\sum_{x\in B}x = 0$.
+        \pause
+       \item \textbf{Example:} $A=\{1, 5, -14, -6, 3\}$ satisfies the property, with $B=\{1, 5, -6\}$ because $1 + 5 + -6 = 0$.
+       \pause
+       \item $A=\{2, 6, 8, -7\}$ does not satisfy the property (no subset sums to 0).
+    \end{itemize}
+\end{frame}
+
+\begin{frame}
+    \frametitle{Subset Sum Problem}
+    \begin{itemize}
+        \item The subset sum problem is NP-Complete.
+        \pause
+        \item In general terms, it means that no one knows how to solve the problem efficiently.
+        \pause
+        \item The brute force approach requires checking all $2^n - 1$ subsets of a set of size $n$, which, due the exponential growth with respect to $n$, become unpractical for all but small $n$.
+    \end{itemize}
+\end{frame}
+
+\section{Neural Network Implementation}
+
+\begin{frame}
+    \frametitle{Neural Network Implementation}
+    \begin{itemize}
+        \item I implemented the multilayer backpropagation neural network algorithm from scratch in Python.
+        \pause
+        \item This allowed me to tweak things with great precision.
+    \end{itemize}
+\end{frame}
+
+\begin{frame}
+    \frametitle{Parameters}
+    \begin{itemize}
+        \item Start with random weights from -1 to 1.
+        \pause
+        \item Each layer in the network has a bias node, which does not receive input from the previous layer.
+        \pause
+        \item Initialize bias node weights to 1.
+        \pause
+        \item Train the bias nodes with the same backpropagation rule as the other nodes.
+    \end{itemize}
+\end{frame}
+
+\begin{frame}
+    \frametitle{Architecture}
+    \begin{itemize}
+        \item I settled on using four layers of nodes.
+        \pause
+        \item The first three layers have $n$ nodes, and the last layer has one node (for binary output).
+        \pause
+        \item I tested for $n\in\{10, 20, \ldots, 80\}$.
+    \end{itemize}
+\end{frame}
+
 \section{Questions}
 
 \begin{frame}
