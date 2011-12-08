@@ -2,7 +2,9 @@
 """
 Compute statistics from the outputs of the neural network.
 
-This uses numpy to compute the mean and standard deviation.
+This uses numpy to compute the mean and standard deviation and scipy to
+calculate the t-test for comparing the means of the accuracy and the
+output per test pattern.
 """
 
 from __future__ import division
@@ -10,6 +12,7 @@ import argparse
 import sys
 
 from numpy import mean, std
+from scipy.stats import ttest_1samp
 
 parser = argparse.ArgumentParser(description="This computes statistics "
     "from the outputs of the neural network.")
@@ -61,21 +64,27 @@ def main(args):
     print "Stat 2: Average output of the test patterns"
     print "-------------------------------------------"
     mean_ones = []
+    diffs = []
     for NODES in bydict['NODES']:
-        for trueneg, falseneg, truepos, falsepos in zip(
+        for trueneg, falseneg, truepos, falsepos, accuracy in zip(
             bydict['NODES'][NODES]['trueneg'],
             bydict['NODES'][NODES]['falseneg'],
             bydict['NODES'][NODES]['truepos'],
-            bydict['NODES'][NODES]['falsepos']):
+            bydict['NODES'][NODES]['falsepos'],
+            bydict['NODES'][NODES]['accuracy']):
 
                 m = (truepos + falsepos)/(trueneg + falseneg + truepos + falsepos)
                 mean_ones.append(m)
+                diff = m - accuracy
+                diffs.append(diff)
 
     mean_mean_ones = mean(mean_ones)
     std_mean_ones = std(mean_ones)
-    print "mean ones, std, mean +/- 2*std"
+    t, prob = ttest_1samp(diffs, 0)
+    print "mean ones, std, mean +/- 2*std, t, prob, mean diffs, std diffs"
     print mean_mean_ones, std_mean_ones,
-    print [mean_mean_ones - 2*std_mean_ones, mean_mean_ones + 2*std_mean_ones]
+    print [mean_mean_ones - 2*std_mean_ones, mean_mean_ones + 2*std_mean_ones],
+    print t, prob, mean(diffs), std(diffs)
     print
 
     ###################################################
