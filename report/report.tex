@@ -83,7 +83,6 @@ I did not use the energy function $E_n$ with an $\epsilon$ for convergence.  I o
 I generated 100 training patterns and 100 testing patterns, and ran them on the network with $n\in\{10, 20, \ldots, 80\}$.  I then repeated this process (including generating new data) a total of 50 times. This took about 24 hours to complete.
 
 To determine how well the network performed, I first needed to compute the actual mean output of the patterns, to see how well `chance' would perform.  I computed this to be 0.4544 with a standard deviation of 0.04596.  The output of the network for the eight architectures is given in Table \ref{Accuracy-Table}.
-
 \begin{table}[h]
     \begin{center}
     \begin{tabular}{|c|c|c|c|}
@@ -112,9 +111,8 @@ To determine how well the network performed, I first needed to compute the actua
     \label{Accuracy-Table}
 \end{table}
 
-As you can see, the accuracy is little better than chance (a t-test reveals that it is slightly better, but it is clearly not by much).  Furthermore, increasing the number of nodes in the network does not really improve the accuracy.  Indeed, we find that the only thing that this does is improve the convergence.  See Table \ref{Convergence-Table}
-
-\begin{table}[h]
+As you can see, the accuracy is little better than chance (a t-test reveals that it is slightly better, but it is clearly not by much).  Furthermore, increasing the number of nodes in the network does not really improve the accuracy.  Indeed, we find that the only thing that this does is improve the convergence.  See Table \ref{Convergence-Table}.
+\begin{table}[h!]
     \begin{center}
     \begin{tabular}{|c|c|c|}
         \hline
@@ -143,5 +141,8 @@ As you can see, the accuracy is little better than chance (a t-test reveals that
     \caption{Convergence properties for various architectures.}
     \label{Convergence-Table}
 \end{table}
+
+\section{Conclusion}
+We find, not surprisingly, that the multilayer backpropagation neural network algorithm is not well suited for solving the subset sum problem.  This is of course not surprising because the problem is NP-complete, which means that even if the network were successful, then it would be very inefficient.  Indeed, for 100 sets of size 10, checking the all 1023 possible subsets takes less than a second on a modern machine, whereas training running the neural network takes several minutes to half an hour (depending on the size of the network).
 
 \end{document}
