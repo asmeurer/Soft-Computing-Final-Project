@@ -20,13 +20,128 @@
 \usepackage{color}
 \usepackage{graphicx}
 \usepackage{pdfpages}
+\usepackage{alltt}
 %\usepackage[T1]{fontenc}
 \begin{document}
 % \newcommands go here
 % like \newcommand{\R}{\mathbb{R}}
-\title{}
+\title{Using a Neural Network to Solve the NP-Complete Subset Sum Problem}
 \author{Aaron Meurer}
-\date{}
+\date{December 7, 2011}
 \maketitle
+
+\begin{abstract}
+I implemented the multilayer backpropagation neural network algorithm from scratch in the Python programming language, and attempted to train it to solve the subset sum problem, an NP-complete problem.  The result was that the algorithm did little better than chance, even upon increasing the size of the network.
+\end{abstract}
+
+\section{Introduction}
+The subset sum problem is a classical problem from the theory of computation.  The problem is as follows: given a finite set of positive and negative integers, determine if there exists a subset that sums to zero.  Formally, given a finite set $A\subset \mathbb{Z}_+\cup\mathbb{Z}_-$, the problem is to determine if there exists a nonempty $B\subseteq A$ such that $\sum_{x\in B} x = 0$. It can be shown that this problem is NP-complete, which means that no one knows of an efficient way to solve the problem (efficient roughly meaning that the solution does not become unpractical as the size of $A$ increases).
+
+\section{Neural Network Implementation}
+I implemented the multilayer backpropagation neural network algorithm from scratch in the Python programming language.  This allowed me to tweak things with great precision, and it also gave me a strong understanding of how the algorithm works.
+
+I also created a simple script that generates sets of numbers and checks if they satisfy the subset sum property.  After experimentation, I found that sets of 10 numbers each ranging from -500 to 500 (excluding 0) satisfied the subset sum property roughly half of the time.
+
+\subsection{Parameters}
+Implementing the algorithm from scratch allowed me to implement many different techniques for increasing the convergence rate and to tweak the parameters for each very precisely.  I started with initial weights randomly chosen from -1 to 1.  Each layer has a bias node, which does not receive input from the previous layer.  This node starts with the initial weight of 1. I found that bias nodes were essential if the input has a pattern with all zeros, which occurred when I tested the network on the XOR problem.
+
+I found that using a dynamic learning rate greatly increased the rate of convergence.  I started with $\eta_1 = 1$ and used the update rule:
+\begin{equation}
+\eta_{n+1} =
+\begin{cases}
+   \eta_n + a & \text{if } E_n < E_{n - 1} \text{ and } E_{n - 1} < E_{n - 2} \\
+   \eta_n*(1 - b) & \text{if }E_n > E_{n - 1} \\
+   \eta_n & \text{otherwise}
+\end{cases},
+\end{equation}
+where $E_n=\sum_i{(t_i - o_i)^2}/2$ is the total error for epoch $n$.
+
+I used $a = 1$ and $b = 0.01$, which increases the learning rate generously (in general, if $E_n$ is decreasing in each epoch, then $eta_n \sim n$.  The rule to decrease $eta_n$ by only when $E_n$ has decreased twice in a row is important---without it, $E_n$ will tend to oscillate along with $eta_n$.
+
+I used a momentum term with $\alpha = 0.9$.  I found that setting $\alpha$ very close to 1, without actually being equal to it, lead to faster convergence.
+
+Finally, I played around with many architectures, but I finally settled on using a network with four layers, with the first three having $n$ nodes and the last layer having one node.  I then tried this for $n\in \{10, 20, \ldots, 80\}$.  The activation for each layer was a sigmoid with $k=1/20$.  This value was chosen to prevent floating point overflow/underflow.  I found it important to actually use a scaled hyperbolic tangent rather than the direct definition with the exponential to compute the activation, or else overflow/underflow would occur in intermediate calculations.
+
+The input to the network was just the set.  Some example input is
+\begin{alltt}
+    (-337, -98, -274, 438, -135, 22, -6, 315, -188, -67), 1\\
+    (-457, -344, 275, 466, 112, 391, 218, 86, -339, -332), 1\\
+    (-60, 329, -4, 363, -383, 166, -313, 382, -134, -307), 0\\
+    (1, 470, 156, 497, -90, -349, 267, -186, -418, 296), 1\\
+    (22, -147, -260, -99, 199, -209, -131, 266, 278, 482), 1\\
+    (53, 35, 360, -18, 85, 103, 447, -320, -141, 307), 0\\
+    (398, -273, 382, -54, -192, 58, 79, -167, 277, 143), 1\\
+    (-83, -90, -495, -304, -300, -406, -418, 365, -90, -64), 0
+\end{alltt}
+here the first element is the input, the set.  The second number is the output.  The output is 1 if the set satisfies the property and 0 if it does not (for example, in the first set, -337 + 22 + 315 = 0). I considered the output of the network to be a 1 if it was $\geq 0.5$ and 0 otherwise.
+
+The convergence condition I settled on was to converge only if all outputs were correct.  I also cut off the network at 200 epochs.  Often, the network would be very close to reaching this condition, with one or two patterns would be stuck just barely on the ``wrong side'' of 0.5 (like 0.49 for and output of 1).  Thus, I always tested the network, even if the convergence condition was never met (after 200 epochs, it was always close if it had not reached it already).
+
+I did not use the energy function $E_n$ with an $\epsilon$ for convergence.  I originally did this, but I found that it did not make a difference, and if anything, setting $\epsilon$ to small lead to over-training.  This makes sense, as the total error must be no larger than $\sum_{i=1}^{100}{0.5^2}/2=12.5$ for all testing data to be correct.  However, the network would generally start with $E_n \sim 12.5$ for initial random weights, which also makes sense, as this is kind of an ``average'' value.
+
+\section{Results}
+I generated 100 training patterns and 100 testing patterns, and ran them on the network with $n\in\{10, 20, \ldots, 80\}$.  I then repeated this process (including generating new data) a total of 50 times. This took about 24 hours to complete.
+
+To determine how well the network performed, I first needed to compute the actual mean output of the patterns, to see how well `chance' would perform.  I computed this to be 0.4544 with a standard deviation of 0.04596.  The output of the network for the eight architectures is given in Table \ref{Accuracy-Table}.
+
+\begin{table}[h]
+    \begin{center}
+    \begin{tabular}{|c|c|c|c|}
+        \hline
+        Node architecture & Mean accuracy & Standard Deviation \\
+        \hline
+        (10, 10, 10, 1) & 0.5054 &  0.0553\\
+        \hline
+        (20, 20, 20, 1) & 0.5132 &  0.0466\\
+        \hline
+        (30, 30, 30, 1) & 0.5038 &  0.0527\\
+        \hline
+        (40, 40, 40, 1) & 0.517  & 0.05326\\
+        \hline
+        (50, 50, 50, 1) & 0.506  & 0.04677\\
+        \hline
+        (60, 60, 60, 1) & 0.5122 &  0.0454\\
+        \hline
+        (70, 70, 70, 1) & 0.515  & 0.05288\\
+        \hline
+        (80, 80, 80, 1) & 0.5084 &  0.0455\\
+        \hline
+    \end{tabular}
+    \end{center}
+    \caption{Accuracy of the network for various architectures.}
+    \label{Accuracy-Table}
+\end{table}
+
+As you can see, the accuracy is little better than chance (a t-test reveals that it is slightly better, but it is clearly not by much).  Furthermore, increasing the number of nodes in the network does not really improve the accuracy.  Indeed, we find that the only thing that this does is improve the convergence.  See Table \ref{Convergence-Table}
+
+\begin{table}[h]
+    \begin{center}
+    \begin{tabular}{|c|c|c|}
+        \hline
+        Node & \% of training patterns & Average number \\
+        architecture &  that converged & of epochs to converge\\
+         & in $< 200$ epochs &  for such patterns\\
+        \hline
+        (10, 10, 10, 1) & 0.0 & --\\
+        \hline
+        (20, 20, 20, 1) & 0.12 & 147.2\\
+        \hline
+        (30, 30, 30, 1) & 0.28 & 108.4\\
+        \hline
+        (40, 40, 40, 1) & 0.28 & 90.6\\
+        \hline
+        (50, 50, 50, 1) & 0.36 & 94.2\\
+        \hline
+        (60, 60, 60, 1) & 0.52 & 66.0\\
+        \hline
+        (70, 70, 70, 1) & 0.56 & 70.7\\
+        \hline
+        (80, 80, 80, 1) & 0.76 & 60.5\\
+        \hline
+    \end{tabular}
+    \end{center}
+    \caption{Convergence properties for various architectures.}
+    \label{Convergence-Table}
+\end{table}
 
 \end{document}
