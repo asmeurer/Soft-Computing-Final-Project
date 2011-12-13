@@ -2,6 +2,7 @@ patterns
 patterns_small
 patterns_test
 weights.py
+output
 *.pyc
 *.c
 *.so
